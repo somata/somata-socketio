@@ -1,4 +1,4 @@
-somata_socketio = require './'
+somata_socketio = require '../'
 
 app = somata_socketio.setup_app
     port: 20002
