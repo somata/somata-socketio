@@ -54,6 +54,11 @@ setup_io = (io) ->
                 console.log '[client.on] ' + util.inspect arguments, colors: true
                 socket.emit 'event', service, type, event
 
+        # Unsubscribe from a service's events
+        socket.on 'unsubscribe', (service, type) ->
+            console.log "[io.on unsubscribe] <#{ socket.id }> #{ service } : #{ type }"
+            client.unsubscribe service, type
+
 module.exports =
     setup_app: setup_app
 
