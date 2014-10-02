@@ -24,6 +24,9 @@ setup_app = (options) ->
 
     setup_io io
 
+    app.client = client
+    app.io = io
+
     app.start = (cb) ->
         http_server.listen app.config.port, ->
             console.log "Listening on :#{ app.config.port }"
