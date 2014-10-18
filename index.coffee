@@ -2,7 +2,6 @@ socketio = require 'socket.io'
 polar = require 'polar'
 express = require 'express'
 http = require 'http'
-redis = (require 'redis').createClient()
 somata = require 'somata'
 util = require 'util'
 {log} = somata.helpers
