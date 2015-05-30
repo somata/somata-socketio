@@ -1,16 +1,17 @@
 # Connect to the Socket.io server
 
 socket = io.connect()
+highland = require 'highland'
 
 # Call a remote service's method
 
-window.remote = (service, method, args..., cb) ->
+exports.remote = (service, method, args..., cb) ->
     socket.emit 'remote', service, method, args..., cb
 
 # Subscribe to a service's events
 
 subscriptions = {}
-window.subscribe = (service, type, cb) ->
+exports.subscribe = (service, type, cb) ->
     subscriptions[service] ||= {}
     subscriptions[service][type] ||= []
     subscriptions[service][type].push cb
@@ -39,21 +40,11 @@ socket.on 'hello', ->
         for type, fns of types
             socket.emit 'subscribe', service, type
 
-# Make a reference to h
-
-window.h = highland
-
 # Creating event streams
 
-window.eventStream = (service, event) ->
+exports.eventStream = (service, event) ->
     stream = h()
     subscribe service, event, (value) ->
         stream.write value
     return stream
-
-# Log helper
-
-window.log = h.curry (s, v) ->
-    if !v? console.log s
-    else console.log '[' + s + ']', v
 
