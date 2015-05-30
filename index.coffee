@@ -39,7 +39,7 @@ setup_io = (io) ->
     # Handle new client socket connections
     io.on 'connection', (socket) ->
         log.i "[io.on connection] New connection #{ socket.id }"
-        subscriptions = []
+        subscriptions = {}
 
         socket.emit 'hello' # Emit a 'hello' for reconnections
 
@@ -53,15 +53,25 @@ setup_io = (io) ->
         # Forward subscriptions by emitting events back over socket
         socket.on 'subscribe', (service, type) ->
             console.log "[io.on subscribe] <#{ socket.id }> #{ service } : #{ type }"
-            subscriptions.push client.on service, type, (err, event) ->
-                console.log '[client.on] ' + util.inspect arguments, colors: true
+            handler = client.on service, type, (err, event) ->
                 socket.emit 'event', service, type, event
+            subscriptions[service] ||= {}
+            subscriptions[service][type] ||= []
+            subscriptions[service][type].push handler
+
+        socket.on 'unsubscribe', (service, type) ->
+            console.log '[io.on unsubscribe]', service, type
+            subscriptions[service][type].map (sub_id) ->
+                client.unsubscribe sub_id
+            delete subscriptions[service][type]
 
         # Unsubscribe from all of a socket's subscriptions
         socket.on 'disconnect', ->
             console.log "[io.on disconnect] <#{ socket.id }>"
-            subscriptions.map (sub_id) ->
-                client.unsubscribe sub_id
+            for service, types of subscriptions
+                for type, subs of types
+                    subs.map (sub_id) ->
+                        client.unsubscribe sub_id
 
 module.exports =
     setup_app: setup_app
