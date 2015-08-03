@@ -73,6 +73,5 @@ setup_io = (io) ->
                     subs.map (sub_id) ->
                         client.unsubscribe sub_id
 
-module.exports =
-    setup_app: setup_app
+module.exports = setup_app
 
