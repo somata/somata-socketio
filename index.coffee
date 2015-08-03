@@ -19,7 +19,7 @@ setup_app = (options) ->
 
     # Create the polar app
     options.app = base_app
-    app = polar.setup_app options
+    app = polar options
 
     setup_io io
 
