@@ -1,6 +1,6 @@
 somata_socketio = require '../'
 
-app = somata_socketio.setup_app
+app = somata_socketio
     port: 20002
 
 app.get '/', (req, res) ->
