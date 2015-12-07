@@ -53,7 +53,7 @@ setup_io = (io) ->
         # Forward subscriptions by emitting events back over socket
         socket.on 'subscribe', (service, type) ->
             console.log "[io.on subscribe] <#{ socket.id }> #{ service } : #{ type }"
-            handler = client.on service, type, (err, event) ->
+            handler = client.on service, type, (event) ->
                 socket.emit 'event', service, type, event
             subscriptions[service] ||= {}
             subscriptions[service][type] ||= []
