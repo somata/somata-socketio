@@ -1,0 +1,29 @@
+{
+    "name": "somata-socketio",
+    "version": "0.0.3",
+    "description": "Wrap Somata service events in a socketio stream",
+    "homepage": "http://github.com/somata/somata-socketio",
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/somata/somata-socketio.git"
+    },
+    "author": {
+        "name": "Sean Robertson",
+        "org": "Prontotype",
+        "url": "http://prontotype.us/"
+    },
+    "keywords": [
+        "somata",
+        "socketio"
+    ],
+    "main": "lib/index.js",
+    "scripts": {
+        "build": "coffee -o lib -c src"
+    },
+    "dependencies": {
+        "socketio": "1.x.x",
+        "somata": "0.0.x"
+    }
+}
+
+
