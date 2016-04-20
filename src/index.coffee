@@ -1,5 +1,6 @@
 socketio = require 'socket.io'
 polar = require 'polar'
+polar_utils = require 'polar/lib/utils'
 express = require 'express'
 http = require 'http'
 somata = require 'somata'
@@ -10,7 +11,8 @@ client = new somata.Client
 
 # Set up Polar using a base express server for Socket.IO to attach to
 
-setup_app = (options) ->
+setup_app = (polar_configs...) ->
+    polar_config = polar_utils.merge_all polar_configs
 
     # Create a base express server
     base_app = express()
@@ -18,11 +20,10 @@ setup_app = (options) ->
     io = socketio.listen(http_server)
 
     # Create the polar app
-    options.app = base_app
-    app = polar options
+    polar_config.app = base_app
+    app = polar polar_config
 
     setup_io io
-
     app.client = client
     app.io = io
 
