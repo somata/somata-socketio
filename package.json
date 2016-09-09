@@ -1,6 +1,6 @@
 {
     "name": "somata-socketio",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "Wrap Somata service events in a socketio stream",
     "homepage": "http://github.com/somata/somata-socketio",
     "repository": {
@@ -21,9 +21,9 @@
         "build": "coffee -o lib -c src"
     },
     "dependencies": {
+        "express": "3.4.x",
         "socket.io": "1.3.x",
         "somata": "0.1.x"
     }
 }
-
 
