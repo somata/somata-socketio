@@ -21,7 +21,7 @@
         "build": "coffee -o lib -c src"
     },
     "dependencies": {
-        "socketio": "1.x.x",
+        "socket.io": "1.3.x",
         "somata": "0.1.x"
     }
 }
