@@ -48,7 +48,7 @@ setup_io = (io) ->
         socket.on 'remote', (service, method, args..., cb) ->
             console.log "[io.on remote] <#{ socket.id }> #{ service } : #{ method }"
             client.remote service, method, args..., (err, data) ->
-                console.log '[client.remote] ' + util.inspect arguments, colors: true
+                console.log "[io.on remote] Response from <#{ socket.id }> #{ service } : #{ method }"
                 cb err, data
 
         # Forward subscriptions by emitting events back over socket
