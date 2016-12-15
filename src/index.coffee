@@ -54,11 +54,14 @@ setup_io = (io) ->
         # Forward subscriptions by emitting events back over socket
         socket.on 'subscribe', (service, type) ->
             console.log "[io.on subscribe] <#{ socket.id }> #{ service } : #{ type }"
-            handler = client.subscribe service, type, (err, event) ->
+            id = somata.helpers.randomString(10)
+            subscription = {id, service, type, args: []}
+            subscription.cb = (event) ->
                 socket.emit 'event', service, type, event
+            handler = client.subscribe subscription
             subscriptions[service] ||= {}
             subscriptions[service][type] ||= []
-            subscriptions[service][type].push handler
+            subscriptions[service][type].push id
 
         socket.on 'unsubscribe', (service, type) ->
             console.log '[io.on unsubscribe]', service, type
