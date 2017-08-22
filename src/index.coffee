@@ -37,6 +37,7 @@ setup_app = (polar_configs...) ->
 # Setup Socket.io handlers for clients to make `remote` and `subscribe` calls
 setup_io = (io, config) ->
     authenticated = {}
+    needs_auth = config.auth?.token_strategy?
 
     # Handle new client socket connections
     io.on 'connection', (socket) ->
@@ -48,29 +49,30 @@ setup_io = (io, config) ->
         socket.emit 'hello' # Emit a 'hello' for reconnections
 
         socket.on 'hello', (token) ->
-            config.auth?.token_strategy?.decode config.auth, token, (err, user) ->
-                if err?
-                    console.log '[authentication error]', err
-                    socket.emit 'error', err
-                else
-                    console.log '[authentication user]', user
-                    authenticated[socket.id] = true
-                    socket.emit 'welcome', user
+            if needs_auth
+                config.auth.token_strategy.decode config.auth, token, (err, user) ->
+                    if err?
+                        console.log '[authentication error]', err
+                        socket.emit 'error', err
+                    else
+                        console.log '[authentication user]', user
+                        authenticated[socket.id] = true
+                        socket.emit 'welcome', user
 
         # Forward 'remote' calls
         socket.on 'remote', (service, method, args..., cb) ->
-            return if !authenticated[socket.id]
+            return if needs_auth and !authenticated[socket.id]
             console.log "[io.on remote] <#{ socket.id }> #{ service } : #{ method }"
             client.remote service, method, args..., (err, data) ->
                 console.log "[io.on remote] Response from <#{ socket.id }> #{ service } : #{ method }"
                 cb err, data
 
         # Forward subscriptions by emitting events back over socket
-        socket.on 'subscribe', (service, type) ->
-            return if !authenticated[socket.id]
+        socket.on 'subscribe', (service, type, args...) ->
+            return if needs_auth and !authenticated[socket.id]
             console.log "[io.on subscribe] <#{ socket.id }> #{ service } : #{ type }"
             id = somata.helpers.randomString(10)
-            subscription = {id, service, type, args: []}
+            subscription = {id, service, type, args}
             subscription.cb = (event) ->
                 socket.emit 'event', service, type, event
             handler = client.subscribe subscription
@@ -79,7 +81,7 @@ setup_io = (io, config) ->
             subscriptions[service][type].push id
 
         socket.on 'unsubscribe', (service, type) ->
-            return if !authenticated[socket.id]
+            return if needs_auth and !authenticated[socket.id]
             console.log '[io.on unsubscribe]', service, type
             subscriptions[service][type].map (sub_id) ->
                 client.unsubscribe sub_id
